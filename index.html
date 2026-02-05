@@ -1,0 +1,639 @@
+<!DOCTYPE html> 
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced C Programming Quiz</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #00bcd4; /* Cyan */
+            --correct-color: #4caf50;
+            --wrong-color: #f44336;
+            --code-bg: #282c34;
+            --btn-hover: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        h1, h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Code Block */
+        .code-container {
+            background-color: var(--code-bg);
+            padding: 1.2rem;
+            border-radius: 6px;
+            text-align: left;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        pre { margin: 0; }
+        code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: #dcdcdc;
+        }
+
+        /* Buttons */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 500px) {
+            .btn-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid #444;
+            padding: 14px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover:not([disabled]) {
+            background-color: var(--btn-hover);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        /* Answer States */
+        .btn.correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: var(--correct-color);
+            color: var(--correct-color);
+        }
+
+        .btn.wrong {
+            background-color: rgba(244, 67, 54, 0.2);
+            border-color: var(--wrong-color);
+            color: var(--wrong-color);
+        }
+
+        .start-btn, .next-btn, .restart-btn {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .start-btn:hover, .next-btn:hover, .restart-btn:hover {
+            background-color: #00acc1;
+            transform: scale(1.02);
+        }
+
+        .hidden { display: none; }
+
+        /* Progress & Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: bold;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #333;
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Explanation Box */
+        .explanation {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #ccc;
+            border-left: 3px solid var(--accent-color);
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="start-screen" class="screen active">
+            <h1>C Expert Quiz</h1>
+            <p>20 Fragen. Pointer, Memory, Undefined Behavior.<br>Bist du bereit, deinen Compiler herauszufordern?</p>
+            <button id="start-btn" class="btn start-btn">Quiz starten</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="header">
+                <span id="question-count">Frage 1 / 20</span>
+                <span id="score">Score: 0</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress" class="progress"></div>
+            </div>
+            
+            <div class="code-container">
+                <pre><code id="code-snippet">// Code lädt...</code></pre>
+            </div>
+
+            <h3 id="question-text">Frage lädt...</h3>
+            
+            <div id="answer-buttons" class="btn-grid">
+                </div>
+
+            <div id="explanation" class="explanation"></div>
+            
+            <button id="next-btn" class="btn next-btn hidden">Weiter</button>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h1>Ergebnis</h1>
+            <p>Du hast <strong id="final-score" style="color: white; font-size: 1.5rem;">0</strong> von <span id="total-questions">20</span> Punkten.</p>
+            <p id="feedback-message"></p>
+            <button id="restart-btn" class="btn restart-btn">Nochmal versuchen</button>
+        </div>
+    </div>
+
+    <script>
+        // --- DIE 20 FORTGESCHRITTENEN FRAGEN ---
+        const questions = [
+            {
+                code: `int x = 5;
+int *p = &x;
+int y = *p++;
+printf("%d %d", x, y);`,
+                question: "Was ist der Output? (Angenommen x=1000)",
+                answers: [
+                    { text: "6 5", correct: false },
+                    { text: "5 5", correct: true },
+                    { text: "5 6", correct: false },
+                    { text: "Undefined Behavior", correct: false }
+                ],
+                explanation: "Post-Inkrement (p++) hat höhere Priorität als Dereferenzierung (*). Es wird der alte Wert von p dereferenziert (5), dann wird der Pointer p erhöht."
+            },
+            {
+                code: `char *str = "Hello";
+str[0] = 'M';
+printf("%s", str);`,
+                question: "Was passiert zur Laufzeit?",
+                answers: [
+                    { text: "Gibt 'Mello' aus", correct: false },
+                    { text: "Compiler Error", correct: false },
+                    { text: "Segmentation Fault (Crash)", correct: true },
+                    { text: "Nichts", correct: false }
+                ],
+                explanation: "String-Literale liegen meist im Read-Only Speicher. Das Schreiben darauf verursacht einen SegFault."
+            },
+            {
+                code: `#define SQUARE(x) x*x
+int result = SQUARE(3+2);`,
+                question: "Welchen Wert hat result?",
+                answers: [
+                    { text: "25", correct: false },
+                    { text: "11", correct: true },
+                    { text: "10", correct: false },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Textersetzung: 3+2*3+2. Punkt vor Strich: 3 + 6 + 2 = 11. Man sollte #define SQUARE(x) ((x)*(x)) nutzen."
+            },
+            {
+                code: `int a[5] = {1, 2, 3, 4, 5};
+int *p = (int*)(&a + 1);
+printf("%d", *(p - 1));`,
+                question: "Was wird ausgegeben?",
+                answers: [
+                    { text: "1", correct: false },
+                    { text: "5", correct: true },
+                    { text: "Garbage Value", correct: false },
+                    { text: "Out of bounds error", correct: false }
+                ],
+                explanation: "&a ist Zeiger auf Array[5]. &a+1 springt 5 Ints weiter (hinter das Array). (p-1) zeigt auf das letzte Element."
+            },
+            {
+                code: `unsigned int a = 10;
+int b = -20;
+if (a + b > 10) printf("A");
+else printf("B");`,
+                question: "Was wird ausgegeben (32-bit System)?",
+                answers: [
+                    { text: "A", correct: true },
+                    { text: "B", correct: false },
+                    { text: "Compiler Error", correct: false },
+                    { text: "Random", correct: false }
+                ],
+                explanation: "Signed int wird zu unsigned 'promoted'. -20 wird eine riesige positive Zahl (im Two's Complement)."
+            },
+            {
+                code: `int x = 010;
+printf("%d", x);`,
+                question: "Was wird ausgegeben?",
+                answers: [
+                    { text: "10", correct: false },
+                    { text: "8", correct: true },
+                    { text: "2", correct: false },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Eine führende 0 kennzeichnet eine Oktalzahl (Basis 8). 10 oktal = 8 dezimal."
+            },
+            {
+                code: `struct {
+    char a;
+    int b;
+} s;
+printf("%zu", sizeof(s));`,
+                question: "Wie groß ist das Struct (typischerweise auf 32/64 bit Systemen)?",
+                answers: [
+                    { text: "5", correct: false },
+                    { text: "8", correct: true },
+                    { text: "4", correct: false },
+                    { text: "1", correct: false }
+                ],
+                explanation: "Wegen 'Data Alignment' und 'Padding' fügt der Compiler 3 Bytes nach 'char a' ein, damit 'int b' an einer durch 4 teilbaren Adresse beginnt."
+            },
+            {
+                code: `int i = 0;
+int x = i++ + i++;
+printf("%d", x);`,
+                question: "Was ist der Wert von x?",
+                answers: [
+                    { text: "1", correct: false },
+                    { text: "0", correct: false },
+                    { text: "2", correct: false },
+                    { text: "Undefined Behavior", correct: true }
+                ],
+                explanation: "Es ist nicht definiert, wann der Side-Effect (Inkrement) innerhalb eines Ausdrucks ohne Sequence Point passiert."
+            },
+            {
+                code: `void func(int arr[]) {
+    printf("%zu", sizeof(arr));
+}
+int main() {
+    int a[10];
+    func(a);
+}`,
+                question: "Was gibt sizeof(arr) in func aus (64-bit System)?",
+                answers: [
+                    { text: "40", correct: false },
+                    { text: "10", correct: false },
+                    { text: "8", correct: true },
+                    { text: "4", correct: false }
+                ],
+                explanation: "Arrays 'zerfallen' (decay) zu Pointern, wenn sie an Funktionen übergeben werden. Man misst die Größe des Pointers (8 Byte auf 64-bit), nicht des Arrays."
+            },
+            {
+                code: `int x = 1;
+if (x == 1)
+    if (x == 2) printf("A");
+else printf("B");`,
+                question: "Was wird ausgegeben?",
+                answers: [
+                    { text: "A", correct: false },
+                    { text: "B", correct: false },
+                    { text: "Nichts", correct: true },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Das 'Dangling Else' Problem. Das 'else' gehört immer zum *nächsten* if. Hier gehört else zu 'if(x==2)'. Da x=1, wird der innere Block nicht ausgeführt."
+            },
+            {
+                code: `int a = 1, b = 2, c = 3;
+int r = (a, b, c);
+printf("%d", r);`,
+                question: "Was ist r?",
+                answers: [
+                    { text: "1", correct: false },
+                    { text: "2", correct: false },
+                    { text: "3", correct: true },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Der Komma-Operator wertet alle Operanden aus und gibt den Wert des *letzten* zurück."
+            },
+            {
+                code: `char *p = NULL;
+printf("%d", sizeof(p));`,
+                question: "Führt das zu einem Crash?",
+                answers: [
+                    { text: "Ja, NULL dereferenzierung", correct: false },
+                    { text: "Nein, gibt Pointer-Größe aus", correct: true },
+                    { text: "Compiler Error", correct: false },
+                    { text: "Hängt vom OS ab", correct: false }
+                ],
+                explanation: "`sizeof` ist ein Compile-Time Operator. Es wird kein Code ausgeführt, nur der Typ von p (char*) analysiert."
+            },
+            {
+                code: `int x = 5;
+x = x << 1;`,
+                question: "Was bewirkt der Left-Shift um 1?",
+                answers: [
+                    { text: "Division durch 2", correct: false },
+                    { text: "Multiplikation mit 2", correct: true },
+                    { text: "Quadrierung", correct: false },
+                    { text: "Keine Änderung", correct: false }
+                ],
+                explanation: "Ein Bit-Shift nach links entspricht einer Multiplikation mit 2 (für positive Integer)."
+            },
+            {
+                code: `float f = 0.1;
+if (f == 0.1) printf("True");
+else printf("False");`,
+                question: "Was wird ausgegeben?",
+                answers: [
+                    { text: "True", correct: false },
+                    { text: "False", correct: true },
+                    { text: "Compiler Error", correct: false },
+                    { text: "Undefined", correct: false }
+                ],
+                explanation: "Das Literal 0.1 ist 'double'. Die Variable f ist 'float'. Aufgrund von Fließkomma-Präzisionsverlust ist float(0.1) != double(0.1)."
+            },
+            {
+                code: `int x = 10;
+void *p = &x;
+x++;
+printf("%d", *(int*)p);`,
+                question: "Was wird ausgegeben?",
+                answers: [
+                    { text: "10", correct: false },
+                    { text: "11", correct: true },
+                    { text: "Garbage", correct: false },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Der void-Pointer zeigt auf die Adresse von x. x wird erhöht. Wir casten den Pointer zurück zu int* und dereferenzieren ihn. Er zeigt auf den geänderten Wert."
+            },
+            {
+                code: `char c = 255;
+if (c > 10) printf("Big");
+else printf("Small");`,
+                question: "Was passiert (bei Standard `char` ist signed)?",
+                answers: [
+                    { text: "Big", correct: false },
+                    { text: "Small", correct: true },
+                    { text: "Compiler Error", correct: false },
+                    { text: "Endless Loop", correct: false }
+                ],
+                explanation: "Signed char geht meist von -128 bis 127. 255 (binär 11111111) wird als -1 interpretiert. -1 ist kleiner als 10."
+            },
+            {
+                code: `#include <stdio.h>
+int main() {
+    printf("%d", printf("C"));
+}`,
+                question: "Was ist der genaue Output?",
+                answers: [
+                    { text: "C", correct: false },
+                    { text: "C1", correct: true },
+                    { text: "1C", correct: false },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Das innere printf druckt 'C' und gibt die Anzahl der gedruckten Zeichen (1) zurück. Das äußere printf druckt diese 1."
+            },
+            {
+                code: `int a[] = {10, 20, 30};
+int *p = a;
+printf("%d", *p++);`,
+                question: "Was wird ausgegeben?",
+                answers: [
+                    { text: "20", correct: false },
+                    { text: "10", correct: true },
+                    { text: "30", correct: false },
+                    { text: "Adresse von a", correct: false }
+                ],
+                explanation: "Wieder Präzedenz: `*p` (10) wird ausgegeben, DANN wird p inkrementiert."
+            },
+            {
+                code: `switch(2) {
+    case 1: printf("1");
+    case 2: printf("2");
+    case 3: printf("3");
+    default: printf("4");
+}`,
+                question: "Was ist der Output?",
+                answers: [
+                    { text: "2", correct: false },
+                    { text: "234", correct: true },
+                    { text: "23", correct: false },
+                    { text: "Compiler Error", correct: false }
+                ],
+                explanation: "Fall-through! Es fehlen die `break` Statements. Sobald Case 2 matcht, werden alle folgenden Statements ausgeführt."
+            },
+            {
+                code: `int x = 5, y = 10;
+x = x ^ y;
+y = x ^ y;
+x = x ^ y;`,
+                question: "Was macht dieser Code?",
+                answers: [
+                    { text: "Setzt beide auf 0", correct: false },
+                    { text: "Tauscht x und y (XOR Swap)", correct: true },
+                    { text: "Undefined Behavior", correct: false },
+                    { text: "Nichts", correct: false }
+                ],
+                explanation: "Der klassische XOR-Swap Algorithmus um zwei Variablen ohne temporäre Variable zu tauschen."
+            }
+        ];
+
+        // --- GAME LOGIC ---
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionContainer = document.getElementById('question-text');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const codeSnippetElement = document.getElementById('code-snippet');
+        const nextButton = document.getElementById('next-btn');
+        const progressElement = document.getElementById('progress');
+        const scoreElement = document.getElementById('score');
+        const questionCountElement = document.getElementById('question-count');
+        const explanationElement = document.getElementById('explanation');
+
+        let shuffledQuestions, currentQuestionIndex;
+        let score = 0;
+
+        document.getElementById('start-btn').addEventListener('click', startQuiz);
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            setNextQuestion();
+        });
+        document.getElementById('restart-btn').addEventListener('click', startQuiz);
+
+        function startQuiz() {
+            startScreen.classList.remove('active');
+            resultScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            
+            shuffledQuestions = questions.sort(() => Math.random() - .5);
+            currentQuestionIndex = 0;
+            score = 0;
+            updateScore();
+            setNextQuestion();
+        }
+
+        function setNextQuestion() {
+            resetState();
+            if (currentQuestionIndex < shuffledQuestions.length) {
+                showQuestion(shuffledQuestions[currentQuestionIndex]);
+                updateProgress();
+            } else {
+                showResults();
+            }
+        }
+
+        function showQuestion(question) {
+            questionCountElement.innerText = `Frage ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
+            codeSnippetElement.innerText = question.code;
+            questionContainer.innerText = question.question;
+            
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            nextButton.classList.add('hidden');
+            explanationElement.style.display = 'none';
+            explanationElement.innerText = '';
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const correct = selectedButton.dataset.correct === "true";
+            
+            if(correct) {
+                score++;
+                updateScore();
+            }
+
+            setStatusClass(selectedButton, correct);
+            
+            Array.from(answerButtonsElement.children).forEach(button => {
+                setStatusClass(button, button.dataset.correct === "true");
+                button.disabled = true;
+            });
+
+            // Erklärung anzeigen
+            const currentQ = shuffledQuestions[currentQuestionIndex];
+            explanationElement.innerText = "Erklärung: " + currentQ.explanation;
+            explanationElement.style.display = 'block';
+
+            nextButton.classList.remove('hidden');
+        }
+
+        function setStatusClass(element, correct) {
+            element.classList.remove('correct');
+            element.classList.remove('wrong');
+            if (correct) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('wrong');
+            }
+        }
+
+        function updateProgress() {
+            const progressPercent = ((currentQuestionIndex) / shuffledQuestions.length) * 100;
+            progressElement.style.width = `${progressPercent}%`;
+        }
+
+        function updateScore() {
+            scoreElement.innerText = `Score: ${score}`;
+        }
+
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultScreen.classList.add('active');
+            
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('total-questions').innerText = shuffledQuestions.length;
+            
+            const feedback = document.getElementById('feedback-message');
+            const percent = (score / shuffledQuestions.length) * 100;
+            
+            if(percent === 100) feedback.innerText = "🏆 LEGENDÄR! Du bist der Compiler!";
+            else if(percent >= 80) feedback.innerText = "🔥 Extrem stark! Fast perfekt.";
+            else if(percent >= 50) feedback.innerText = "👍 Gut gemacht! Aber Pointer sind tricky.";
+            else feedback.innerText = "💀 Segfault. Zeit, das K&R Buch nochmal zu lesen.";
+        }
+    </script>
+</body>
+</html>
