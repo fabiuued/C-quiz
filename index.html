@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced C Programming Quiz</title>
+    <title>C Data Structures & Memory Quiz</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --accent-color: #00bcd4; /* Cyan */
-            --correct-color: #4caf50;
-            --wrong-color: #f44336;
-            --code-bg: #282c34;
-            --btn-hover: #333;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-color: #38bdf8; /* Sky Blue */
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --code-bg: #0f172a;
+            --btn-hover: #334155;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -36,54 +34,44 @@
         .container {
             background-color: var(--card-bg);
             padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             width: 100%;
-            max-width: 700px;
+            max-width: 750px;
             text-align: center;
-            border: 1px solid #333;
+            border: 1px solid #334155;
         }
 
-        h1, h2 {
-            margin-bottom: 1rem;
-            color: var(--accent-color);
-        }
+        h1 { color: var(--accent-color); margin-bottom: 0.5rem; }
+        p { color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6; }
 
-        p {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        /* Screens */
         .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        .screen.active { display: block; animation: slideUp 0.4s ease-out; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Code Block */
         .code-container {
             background-color: var(--code-bg);
-            padding: 1.2rem;
-            border-radius: 6px;
+            padding: 1.5rem;
+            border-radius: 8px;
             text-align: left;
             overflow-x: auto;
             margin-bottom: 1.5rem;
-            border-left: 4px solid var(--accent-color);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+            position: relative;
         }
 
         pre { margin: 0; }
         code {
-            font-family: 'Fira Code', 'Courier New', monospace;
+            font-family: 'Consolas', 'Monaco', monospace;
             font-size: 0.95rem;
-            color: #dcdcdc;
+            color: #e2e8f0;
+            line-height: 1.5;
         }
 
-        /* Buttons */
         .btn-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -91,79 +79,70 @@
             margin-top: 20px;
         }
 
-        @media (min-width: 500px) {
+        @media (min-width: 600px) {
             .btn-grid { grid-template-columns: 1fr 1fr; }
         }
 
         .btn {
-            background-color: transparent;
+            background-color: var(--card-bg);
             color: var(--text-primary);
-            border: 1px solid #444;
-            padding: 14px 20px;
-            border-radius: 6px;
+            border: 2px solid #334155;
+            padding: 16px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             transition: all 0.2s;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .btn:hover:not([disabled]) {
             background-color: var(--btn-hover);
             border-color: var(--accent-color);
-            transform: translateY(-2px);
         }
 
-        .btn:disabled {
-            cursor: default;
-            opacity: 0.7;
-        }
-
-        /* Answer States */
         .btn.correct {
-            background-color: rgba(76, 175, 80, 0.2);
+            background-color: rgba(34, 197, 94, 0.1);
             border-color: var(--correct-color);
             color: var(--correct-color);
         }
 
         .btn.wrong {
-            background-color: rgba(244, 67, 54, 0.2);
+            background-color: rgba(239, 68, 68, 0.1);
             border-color: var(--wrong-color);
             color: var(--wrong-color);
         }
 
-        .start-btn, .next-btn, .restart-btn {
+        .action-btn {
             background-color: var(--accent-color);
-            color: #000;
+            color: #0f172a;
             border: none;
-            font-weight: bold;
             width: 100%;
-            padding: 15px;
-            margin-top: 20px;
+            padding: 16px;
             font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-top: 24px;
+            cursor: pointer;
         }
         
-        .start-btn:hover, .next-btn:hover, .restart-btn:hover {
-            background-color: #00acc1;
-            transform: scale(1.02);
-        }
+        .action-btn:hover { filter: brightness(1.1); }
 
-        .hidden { display: none; }
-
-        /* Progress & Header */
         .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 0.9rem;
             color: var(--text-secondary);
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .progress-bar {
             width: 100%;
-            height: 6px;
-            background-color: #333;
-            border-radius: 3px;
+            height: 8px;
+            background-color: #334155;
+            border-radius: 4px;
             margin-bottom: 25px;
             overflow: hidden;
         }
@@ -172,19 +151,19 @@
             height: 100%;
             background-color: var(--accent-color);
             width: 0%;
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.3s ease;
         }
 
-        /* Explanation Box */
         .explanation {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #2a2a2a;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            color: #ccc;
-            border-left: 3px solid var(--accent-color);
-            display: none; /* Hidden by default */
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(56, 189, 248, 0.1); /* Light blue bg */
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            border-left: 4px solid var(--accent-color);
+            display: none;
+            text-align: left;
         }
     </style>
 </head>
@@ -192,315 +171,309 @@
 
     <div class="container">
         <div id="start-screen" class="screen active">
-            <h1>C Expert Quiz</h1>
-            <p>20 Fragen. Pointer, Memory, Undefined Behavior.<br>Bist du bereit, deinen Compiler herauszufordern?</p>
-            <button id="start-btn" class="btn start-btn">Quiz starten</button>
+            <h1>C Memory & Structs</h1>
+            <p>Ein praxisnahes Quiz über Heap, Stack, Linked Lists und Speicherverwaltung.<br>Keine Trickfragen, sondern wichtiges Wissen.</p>
+            <button id="start-btn" class="action-btn">Starten</button>
         </div>
 
         <div id="quiz-screen" class="screen">
             <div class="header">
                 <span id="question-count">Frage 1 / 20</span>
-                <span id="score">Score: 0</span>
+                <span id="score">Punkte: 0</span>
             </div>
             <div class="progress-bar">
                 <div id="progress" class="progress"></div>
             </div>
             
             <div class="code-container">
-                <pre><code id="code-snippet">// Code lädt...</code></pre>
+                <pre><code id="code-snippet"></code></pre>
             </div>
 
-            <h3 id="question-text">Frage lädt...</h3>
+            <h3 id="question-text">Frage...</h3>
             
-            <div id="answer-buttons" class="btn-grid">
-                </div>
+            <div id="answer-buttons" class="btn-grid"></div>
 
             <div id="explanation" class="explanation"></div>
             
-            <button id="next-btn" class="btn next-btn hidden">Weiter</button>
+            <button id="next-btn" class="action-btn" style="display: none;">Weiter</button>
         </div>
 
         <div id="result-screen" class="screen">
-            <h1>Ergebnis</h1>
-            <p>Du hast <strong id="final-score" style="color: white; font-size: 1.5rem;">0</strong> von <span id="total-questions">20</span> Punkten.</p>
+            <h1>Auswertung</h1>
+            <p>Du hast <strong id="final-score" style="color: var(--accent-color); font-size: 1.5rem;">0</strong> Fragen richtig beantwortet.</p>
             <p id="feedback-message"></p>
-            <button id="restart-btn" class="btn restart-btn">Nochmal versuchen</button>
+            <button id="restart-btn" class="action-btn">Neustart</button>
         </div>
     </div>
 
     <script>
-        // --- DIE 20 FORTGESCHRITTENEN FRAGEN ---
         const questions = [
             {
-                code: `int x = 5;
-int *p = &x;
-int y = *p++;
-printf("%d %d", x, y);`,
-                question: "Was ist der Output? (Angenommen x=1000)",
+                code: `struct Node {
+    int data;
+    struct Node* next;
+};
+struct Node* head = malloc(sizeof(struct Node));`,
+                question: "Wie greifst du korrekt auf das Feld 'data' zu?",
                 answers: [
-                    { text: "6 5", correct: false },
-                    { text: "5 5", correct: true },
-                    { text: "5 6", correct: false },
-                    { text: "Undefined Behavior", correct: false }
+                    { text: "head.data", correct: false },
+                    { text: "head->data", correct: true },
+                    { text: "head::data", correct: false },
+                    { text: "*head.data", correct: false }
                 ],
-                explanation: "Post-Inkrement (p++) hat höhere Priorität als Dereferenzierung (*). Es wird der alte Wert von p dereferenziert (5), dann wird der Pointer p erhöht."
+                explanation: "Da 'head' ein Pointer ist, muss der Pfeil-Operator (->) verwendet werden. 'head.data' würde funktionieren, wenn head kein Pointer, sondern eine Struktur wäre."
             },
             {
-                code: `char *str = "Hello";
-str[0] = 'M';
-printf("%s", str);`,
-                question: "Was passiert zur Laufzeit?",
+                code: `int *ptr = malloc(10 * sizeof(int));
+// ... Benutzung ...
+free(ptr);`,
+                question: "Welchen Wert hat 'ptr' direkt nach dem free()?",
                 answers: [
-                    { text: "Gibt 'Mello' aus", correct: false },
-                    { text: "Compiler Error", correct: false },
-                    { text: "Segmentation Fault (Crash)", correct: true },
-                    { text: "Nichts", correct: false }
-                ],
-                explanation: "String-Literale liegen meist im Read-Only Speicher. Das Schreiben darauf verursacht einen SegFault."
-            },
-            {
-                code: `#define SQUARE(x) x*x
-int result = SQUARE(3+2);`,
-                question: "Welchen Wert hat result?",
-                answers: [
-                    { text: "25", correct: false },
-                    { text: "11", correct: true },
-                    { text: "10", correct: false },
-                    { text: "Compiler Error", correct: false }
-                ],
-                explanation: "Textersetzung: 3+2*3+2. Punkt vor Strich: 3 + 6 + 2 = 11. Man sollte #define SQUARE(x) ((x)*(x)) nutzen."
-            },
-            {
-                code: `int a[5] = {1, 2, 3, 4, 5};
-int *p = (int*)(&a + 1);
-printf("%d", *(p - 1));`,
-                question: "Was wird ausgegeben?",
-                answers: [
-                    { text: "1", correct: false },
-                    { text: "5", correct: true },
-                    { text: "Garbage Value", correct: false },
-                    { text: "Out of bounds error", correct: false }
-                ],
-                explanation: "&a ist Zeiger auf Array[5]. &a+1 springt 5 Ints weiter (hinter das Array). (p-1) zeigt auf das letzte Element."
-            },
-            {
-                code: `unsigned int a = 10;
-int b = -20;
-if (a + b > 10) printf("A");
-else printf("B");`,
-                question: "Was wird ausgegeben (32-bit System)?",
-                answers: [
-                    { text: "A", correct: true },
-                    { text: "B", correct: false },
-                    { text: "Compiler Error", correct: false },
-                    { text: "Random", correct: false }
-                ],
-                explanation: "Signed int wird zu unsigned 'promoted'. -20 wird eine riesige positive Zahl (im Two's Complement)."
-            },
-            {
-                code: `int x = 010;
-printf("%d", x);`,
-                question: "Was wird ausgegeben?",
-                answers: [
-                    { text: "10", correct: false },
-                    { text: "8", correct: true },
-                    { text: "2", correct: false },
-                    { text: "Compiler Error", correct: false }
-                ],
-                explanation: "Eine führende 0 kennzeichnet eine Oktalzahl (Basis 8). 10 oktal = 8 dezimal."
-            },
-            {
-                code: `struct {
-    char a;
-    int b;
-} s;
-printf("%zu", sizeof(s));`,
-                question: "Wie groß ist das Struct (typischerweise auf 32/64 bit Systemen)?",
-                answers: [
-                    { text: "5", correct: false },
-                    { text: "8", correct: true },
-                    { text: "4", correct: false },
-                    { text: "1", correct: false }
-                ],
-                explanation: "Wegen 'Data Alignment' und 'Padding' fügt der Compiler 3 Bytes nach 'char a' ein, damit 'int b' an einer durch 4 teilbaren Adresse beginnt."
-            },
-            {
-                code: `int i = 0;
-int x = i++ + i++;
-printf("%d", x);`,
-                question: "Was ist der Wert von x?",
-                answers: [
-                    { text: "1", correct: false },
+                    { text: "NULL", correct: false },
                     { text: "0", correct: false },
-                    { text: "2", correct: false },
-                    { text: "Undefined Behavior", correct: true }
+                    { text: "Die alte Speicheradresse (Dangling Pointer)", correct: true },
+                    { text: "Eine zufällige neue Adresse", correct: false }
                 ],
-                explanation: "Es ist nicht definiert, wann der Side-Effect (Inkrement) innerhalb eines Ausdrucks ohne Sequence Point passiert."
+                explanation: "free() gibt den Speicher frei, ändert aber den Wert der Pointer-Variable nicht. Der Pointer zeigt immer noch auf die (jetzt ungültige) Adresse."
             },
             {
-                code: `void func(int arr[]) {
-    printf("%zu", sizeof(arr));
-}
-int main() {
-    int a[10];
-    func(a);
+                code: `void add_node(struct Node* head, int value) {
+    struct Node* current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    // Einfügen ...
 }`,
-                question: "Was gibt sizeof(arr) in func aus (64-bit System)?",
+                question: "Was macht dieser Code-Schnipsel?",
                 answers: [
-                    { text: "40", correct: false },
-                    { text: "10", correct: false },
-                    { text: "8", correct: true },
-                    { text: "4", correct: false }
+                    { text: "Sucht den Anfang der Liste", correct: false },
+                    { text: "Löscht alle Elemente", correct: false },
+                    { text: "Traversiert bis zum letzten Knoten", correct: true },
+                    { text: "Erzeugt eine Endlosschleife", correct: false }
                 ],
-                explanation: "Arrays 'zerfallen' (decay) zu Pointern, wenn sie an Funktionen übergeben werden. Man misst die Größe des Pointers (8 Byte auf 64-bit), nicht des Arrays."
+                explanation: "Die Schleife läuft solange, bis ein Knoten keinen Nachfolger mehr hat (next == NULL). Das ist typisch, um etwas am Ende anzufügen."
             },
             {
-                code: `int x = 1;
-if (x == 1)
-    if (x == 2) printf("A");
-else printf("B");`,
-                question: "Was wird ausgegeben?",
+                code: `int *arr = malloc(5 * sizeof(int));
+arr[0] = 10;
+arr = realloc(arr, 10 * sizeof(int));`,
+                question: "Was passiert beim realloc?",
                 answers: [
-                    { text: "A", correct: false },
-                    { text: "B", correct: false },
-                    { text: "Nichts", correct: true },
-                    { text: "Compiler Error", correct: false }
+                    { text: "Löscht den Inhalt und erstellt neues Array", correct: false },
+                    { text: "Vergrößert den Block, behält alte Daten (10) bei", correct: true },
+                    { text: "Erstellt zweiten Block, arr zeigt auf beide", correct: false },
+                    { text: "Gibt NULL zurück, wenn vergrößert wird", correct: false }
                 ],
-                explanation: "Das 'Dangling Else' Problem. Das 'else' gehört immer zum *nächsten* if. Hier gehört else zu 'if(x==2)'. Da x=1, wird der innere Block nicht ausgeführt."
+                explanation: "realloc versucht, den Speicherblock zu vergrößern. Falls nötig, kopiert es die Daten an eine neue Stelle. Die alten Daten (hier die 10) bleiben erhalten."
             },
             {
-                code: `int a = 1, b = 2, c = 3;
-int r = (a, b, c);
-printf("%d", r);`,
-                question: "Was ist r?",
+                code: `int a = 50;
+int *p = &a;
+int **pp = &p;`,
+                question: "Wie greift man über 'pp' auf den Wert 50 zu?",
                 answers: [
-                    { text: "1", correct: false },
-                    { text: "2", correct: false },
-                    { text: "3", correct: true },
-                    { text: "Compiler Error", correct: false }
+                    { text: "**pp", correct: true },
+                    { text: "*pp", correct: false },
+                    { text: "&pp", correct: false },
+                    { text: "pp->pp", correct: false }
                 ],
-                explanation: "Der Komma-Operator wertet alle Operanden aus und gibt den Wert des *letzten* zurück."
+                explanation: "pp ist ein Pointer auf einen Pointer. Einmal dereferenzieren (*pp) gibt uns 'p'. Zweimal dereferenzieren (**pp) gibt uns 'a' (50)."
             },
             {
-                code: `char *p = NULL;
-printf("%d", sizeof(p));`,
-                question: "Führt das zu einem Crash?",
-                answers: [
-                    { text: "Ja, NULL dereferenzierung", correct: false },
-                    { text: "Nein, gibt Pointer-Größe aus", correct: true },
-                    { text: "Compiler Error", correct: false },
-                    { text: "Hängt vom OS ab", correct: false }
-                ],
-                explanation: "`sizeof` ist ein Compile-Time Operator. Es wird kein Code ausgeführt, nur der Typ von p (char*) analysiert."
-            },
-            {
-                code: `int x = 5;
-x = x << 1;`,
-                question: "Was bewirkt der Left-Shift um 1?",
-                answers: [
-                    { text: "Division durch 2", correct: false },
-                    { text: "Multiplikation mit 2", correct: true },
-                    { text: "Quadrierung", correct: false },
-                    { text: "Keine Änderung", correct: false }
-                ],
-                explanation: "Ein Bit-Shift nach links entspricht einer Multiplikation mit 2 (für positive Integer)."
-            },
-            {
-                code: `float f = 0.1;
-if (f == 0.1) printf("True");
-else printf("False");`,
-                question: "Was wird ausgegeben?",
-                answers: [
-                    { text: "True", correct: false },
-                    { text: "False", correct: true },
-                    { text: "Compiler Error", correct: false },
-                    { text: "Undefined", correct: false }
-                ],
-                explanation: "Das Literal 0.1 ist 'double'. Die Variable f ist 'float'. Aufgrund von Fließkomma-Präzisionsverlust ist float(0.1) != double(0.1)."
-            },
-            {
-                code: `int x = 10;
-void *p = &x;
-x++;
-printf("%d", *(int*)p);`,
-                question: "Was wird ausgegeben?",
-                answers: [
-                    { text: "10", correct: false },
-                    { text: "11", correct: true },
-                    { text: "Garbage", correct: false },
-                    { text: "Compiler Error", correct: false }
-                ],
-                explanation: "Der void-Pointer zeigt auf die Adresse von x. x wird erhöht. Wir casten den Pointer zurück zu int* und dereferenzieren ihn. Er zeigt auf den geänderten Wert."
-            },
-            {
-                code: `char c = 255;
-if (c > 10) printf("Big");
-else printf("Small");`,
-                question: "Was passiert (bei Standard `char` ist signed)?",
-                answers: [
-                    { text: "Big", correct: false },
-                    { text: "Small", correct: true },
-                    { text: "Compiler Error", correct: false },
-                    { text: "Endless Loop", correct: false }
-                ],
-                explanation: "Signed char geht meist von -128 bis 127. 255 (binär 11111111) wird als -1 interpretiert. -1 ist kleiner als 10."
-            },
-            {
-                code: `#include <stdio.h>
-int main() {
-    printf("%d", printf("C"));
+                code: `void func() {
+    int x = 10;
+    return &x; // Fehler!
 }`,
-                question: "Was ist der genaue Output?",
+                question: "Warum ist das ein schwerer Fehler?",
                 answers: [
-                    { text: "C", correct: false },
-                    { text: "C1", correct: true },
-                    { text: "1C", correct: false },
-                    { text: "Compiler Error", correct: false }
+                    { text: "Syntaxfehler", correct: false },
+                    { text: "Man darf keine Adressen zurückgeben", correct: false },
+                    { text: "x liegt auf dem Stack und wird beim Return gelöscht", correct: true },
+                    { text: "x müsste malloc nutzen", correct: false }
                 ],
-                explanation: "Das innere printf druckt 'C' und gibt die Anzahl der gedruckten Zeichen (1) zurück. Das äußere printf druckt diese 1."
+                explanation: "Lokale Variablen (Stack) existieren nur innerhalb der Funktion. Gibt man ihre Adresse zurück, zeigt der Pointer auf ungültigen Speicher."
             },
             {
-                code: `int a[] = {10, 20, 30};
-int *p = a;
-printf("%d", *p++);`,
-                question: "Was wird ausgegeben?",
+                code: `struct Node { int val; struct Node* next; };
+struct Node* n1 = malloc(sizeof(struct Node));
+struct Node* n2 = malloc(sizeof(struct Node));
+n1->next = n2;
+free(n1);`,
+                question: "Was ist das Problem hier (Memory Leak)?",
                 answers: [
-                    { text: "20", correct: false },
-                    { text: "10", correct: true },
-                    { text: "30", correct: false },
-                    { text: "Adresse von a", correct: false }
+                    { text: "n1 wurde nicht korrekt gefreit", correct: false },
+                    { text: "Der Zugriff auf n2 ist verloren (Leak)", correct: true },
+                    { text: "n2 wird automatisch mitgelöscht", correct: false },
+                    { text: "Gar keines", correct: false }
                 ],
-                explanation: "Wieder Präzedenz: `*p` (10) wird ausgegeben, DANN wird p inkrementiert."
+                explanation: "Wenn n1 gelöscht wird, existiert der Zeiger 'next' nicht mehr. Wir haben keine Möglichkeit mehr, n2 zu erreichen oder zu free-en."
             },
             {
-                code: `switch(2) {
-    case 1: printf("1");
-    case 2: printf("2");
-    case 3: printf("3");
-    default: printf("4");
+                code: `int matrix[10][10];`,
+                question: "Wo liegt dieser Speicher normalerweise?",
+                answers: [
+                    { text: "Auf dem Heap", correct: false },
+                    { text: "Auf dem Stack (oder global)", correct: true },
+                    { text: "Auf der Festplatte", correct: false },
+                    { text: "Im Read-Only Speicher", correct: false }
+                ],
+                explanation: "Arrays mit fester Größe, die innerhalb einer Funktion deklariert werden, liegen auf dem Stack. Große Arrays können den Stack sprengen (Stack Overflow)."
+            },
+            {
+                code: `char *s1 = "Hello";
+char s2[] = "Hello";`,
+                question: "Was ist der Hauptunterschied?",
+                answers: [
+                    { text: "s1 ist änderbar, s2 nicht", correct: false },
+                    { text: "s1 liegt im Read-Only Bereich, s2 ist eine Kopie auf dem Stack", correct: true },
+                    { text: "Kein Unterschied", correct: false },
+                    { text: "s2 ist ein Pointer, s1 ein Array", correct: false }
+                ],
+                explanation: "s1 ist ein Zeiger auf ein String-Literal (oft Read-Only). s2 ist ein echtes Array auf dem Stack, dessen Inhalt wir verändern dürfen."
+            },
+            {
+                code: `typedef struct {
+    int id;
+    char name[20];
+} User;`,
+                question: "Warum nutzt man 'typedef' hier?",
+                answers: [
+                    { text: "Macht den Code schneller", correct: false },
+                    { text: "Erlaubt 'User x' statt 'struct User x' zu schreiben", correct: true },
+                    { text: "Spart Speicherplatz", correct: false },
+                    { text: "Ist in C zwingend erforderlich", correct: false }
+                ],
+                explanation: "Typedef erstellt einen Alias. Ohne typedef müsste man in C immer 'struct User' schreiben, um eine Variable zu deklarieren."
+            },
+            {
+                code: `void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
 }`,
-                question: "Was ist der Output?",
+                question: "Dies ist 'Call by ...'?",
                 answers: [
-                    { text: "2", correct: false },
-                    { text: "234", correct: true },
-                    { text: "23", correct: false },
-                    { text: "Compiler Error", correct: false }
+                    { text: "Value", correct: false },
+                    { text: "Reference (simuliert durch Pointer)", correct: true },
+                    { text: "Name", correct: false },
+                    { text: "Constant", correct: false }
                 ],
-                explanation: "Fall-through! Es fehlen die `break` Statements. Sobald Case 2 matcht, werden alle folgenden Statements ausgeführt."
+                explanation: "In C gibt es technisch nur Call-by-Value (die Adresse wird kopiert), aber wir nutzen Pointer, um das Verhalten von Call-by-Reference zu erreichen und die Originaldaten zu ändern."
             },
             {
-                code: `int x = 5, y = 10;
-x = x ^ y;
-y = x ^ y;
-x = x ^ y;`,
-                question: "Was macht dieser Code?",
+                code: `struct List {
+    int val;
+    struct List *next;
+};
+// Einfügen am Anfang (Head update)`,
+                question: "Welche Reihenfolge ist korrekt für 'new_node'?",
                 answers: [
-                    { text: "Setzt beide auf 0", correct: false },
-                    { text: "Tauscht x und y (XOR Swap)", correct: true },
-                    { text: "Undefined Behavior", correct: false },
-                    { text: "Nichts", correct: false }
+                    { text: "head = new_node; new_node->next = head;", correct: false },
+                    { text: "new_node->next = head; head = new_node;", correct: true },
+                    { text: "new_node->next = NULL; head = new_node;", correct: false },
+                    { text: "Reihenfolge ist egal", correct: false }
                 ],
-                explanation: "Der klassische XOR-Swap Algorithmus um zwei Variablen ohne temporäre Variable zu tauschen."
+                explanation: "Zuerst muss der neue Knoten auf den alten Kopf zeigen. Erst DANN darf man den Kopf-Zeiger auf den neuen Knoten umbiegen, sonst verliert man die Liste."
+            },
+            {
+                code: `int *p = NULL;
+if (p) { ... }`,
+                question: "Wann wird der Block ausgeführt?",
+                answers: [
+                    { text: "Wenn p gleich NULL ist", correct: false },
+                    { text: "Wenn p NICHT NULL ist (also gültig sein könnte)", correct: true },
+                    { text: "Immer", correct: false },
+                    { text: "Nie, führt zu Crash", correct: false }
+                ],
+                explanation: "In C ist NULL äquivalent zu 0 (false). Jeder andere Zeigerwert ist true. Das ist der Standard-Check, ob ein Pointer initialisiert ist."
+            },
+            {
+                code: `void *ptr;`,
+                question: "Was ist ein void-Pointer?",
+                answers: [
+                    { text: "Ein Pointer auf nichts", correct: false },
+                    { text: "Ein generischer Pointer, der auf jeden Datentyp zeigen kann", correct: true },
+                    { text: "Ein Fehler im Code", correct: false },
+                    { text: "Ein Pointer, der 0 Byte groß ist", correct: false }
+                ],
+                explanation: "void* wird für generische Funktionen genutzt (z.B. malloc gibt void* zurück). Man kann ihn aber nicht direkt dereferenzieren, man muss ihn erst casten."
+            },
+            {
+                code: `int *arr = malloc(100 * sizeof(int));
+// Wir brauchen arr nicht mehr`,
+                question: "Was passiert, wenn wir free(arr) vergessen?",
+                answers: [
+                    { text: "Der Speicher wird sofort freigegeben", correct: false },
+                    { text: "Memory Leak (Speicher bleibt belegt bis Programmende)", correct: true },
+                    { text: "Stack Overflow", correct: false },
+                    { text: "Compiler Warnung", correct: false }
+                ],
+                explanation: "Der Speicher bleibt für das Betriebssystem als 'belegt' markiert, obwohl das Programm ihn nicht mehr nutzt. Bei Langläufern (Servern) führt das zum Absturz."
+            },
+            {
+                code: `struct Node *current = head;
+while(current != NULL) {
+    free(current);
+    current = current->next; // <--- Hier
+}`,
+                question: "Was ist der Fehler in dieser Lösch-Logik?",
+                answers: [
+                    { text: "Kein Fehler", correct: false },
+                    { text: "Use-after-free: current wurde gelöscht, dann wird current->next gelesen", correct: true },
+                    { text: "Man darf structs nicht free-en", correct: false },
+                    { text: "Endlosschleife", correct: false }
+                ],
+                explanation: "Sobald `free(current)` ausgeführt wurde, darf man `current->next` nicht mehr lesen. Man muss den Next-Zeiger in einer temporären Variable speichern, *bevor* man löscht."
+            },
+            {
+                code: `const int *p;`,
+                question: "Was bedeutet diese Deklaration?",
+                answers: [
+                    { text: "Der Pointer p darf nicht geändert werden", correct: false },
+                    { text: "Der Wert, auf den p zeigt, ist read-only", correct: true },
+                    { text: "Beides ist konstant", correct: false },
+                    { text: "p ist ein Integer", correct: false }
+                ],
+                explanation: "Lies es von rechts nach links: 'p is a pointer to an int that is const'. Man kann p woanders hinzeigen lassen, aber den Wert `*p` nicht ändern."
+            },
+            {
+                code: `FILE *f = fopen("data.txt", "r");
+if (f == NULL) {
+    perror("Error");
+}`,
+                question: "Warum prüft man auf NULL?",
+                answers: [
+                    { text: "Weil 'r' für Read steht", correct: false },
+                    { text: "Um zu prüfen, ob die Datei erfolgreich geöffnet wurde", correct: true },
+                    { text: "Das ist unnötig", correct: false },
+                    { text: "Weil Dateien immer NULL enden", correct: false }
+                ],
+                explanation: "Wenn die Datei nicht existiert oder keine Rechte vorhanden sind, gibt fopen NULL zurück. Ohne Prüfung würde der nächste Zugriff (fscanf etc.) crashen."
+            },
+            {
+                code: `struct Data {
+    int id;
+    struct Data sub; // Rekursive Struktur ohne Pointer
+};`,
+                question: "Ist das erlaubt?",
+                answers: [
+                    { text: "Ja, ganz normal", correct: false },
+                    { text: "Nein, unendliche Größe (Compiler Error)", correct: true },
+                    { text: "Nur wenn id static ist", correct: false },
+                    { text: "Ja, aber nur im Heap", correct: false }
+                ],
+                explanation: "Eine Struktur kann keine Instanz von sich selbst enthalten (wie groß wäre sie?). Sie muss einen *Pointer* auf sich selbst enthalten (`struct Data *sub`)."
+            },
+            {
+                code: `size_t len = strlen("Hallo");`,
+                question: "Welchen Wert hat len?",
+                answers: [
+                    { text: "6 (wegen Null-Terminator)", correct: false },
+                    { text: "5", correct: true },
+                    { text: "4", correct: false },
+                    { text: "Unbekannt", correct: false }
+                ],
+                explanation: "strlen zählt die Zeichen bis (aber exklusive) des Null-Terminators. sizeof(\"Hallo\") wäre 6, aber strlen ist 5."
             }
         ];
 
@@ -533,6 +506,7 @@ x = x ^ y;`,
             resultScreen.classList.remove('active');
             quizScreen.classList.add('active');
             
+            // Randomize Questions
             shuffledQuestions = questions.sort(() => Math.random() - .5);
             currentQuestionIndex = 0;
             score = 0;
@@ -551,7 +525,7 @@ x = x ^ y;`,
         }
 
         function showQuestion(question) {
-            questionCountElement.innerText = `Frage ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
+            questionCountElement.innerText = `FRAGE ${currentQuestionIndex + 1} / ${shuffledQuestions.length}`;
             codeSnippetElement.innerText = question.code;
             questionContainer.innerText = question.question;
             
@@ -568,7 +542,7 @@ x = x ^ y;`,
         }
 
         function resetState() {
-            nextButton.classList.add('hidden');
+            nextButton.style.display = 'none';
             explanationElement.style.display = 'none';
             explanationElement.innerText = '';
             while (answerButtonsElement.firstChild) {
@@ -592,12 +566,11 @@ x = x ^ y;`,
                 button.disabled = true;
             });
 
-            // Erklärung anzeigen
-            const currentQ = shuffledQuestions[currentQuestionIndex];
-            explanationElement.innerText = "Erklärung: " + currentQ.explanation;
+            // Show explanation
+            explanationElement.innerHTML = "<strong>Erklärung:</strong> " + shuffledQuestions[currentQuestionIndex].explanation;
             explanationElement.style.display = 'block';
 
-            nextButton.classList.remove('hidden');
+            nextButton.style.display = 'block';
         }
 
         function setStatusClass(element, correct) {
@@ -616,7 +589,7 @@ x = x ^ y;`,
         }
 
         function updateScore() {
-            scoreElement.innerText = `Score: ${score}`;
+            scoreElement.innerText = `PUNKTE: ${score}`;
         }
 
         function showResults() {
@@ -624,15 +597,14 @@ x = x ^ y;`,
             resultScreen.classList.add('active');
             
             document.getElementById('final-score').innerText = score;
-            document.getElementById('total-questions').innerText = shuffledQuestions.length;
             
             const feedback = document.getElementById('feedback-message');
             const percent = (score / shuffledQuestions.length) * 100;
             
-            if(percent === 100) feedback.innerText = "🏆 LEGENDÄR! Du bist der Compiler!";
-            else if(percent >= 80) feedback.innerText = "🔥 Extrem stark! Fast perfekt.";
-            else if(percent >= 50) feedback.innerText = "👍 Gut gemacht! Aber Pointer sind tricky.";
-            else feedback.innerText = "💀 Segfault. Zeit, das K&R Buch nochmal zu lesen.";
+            if(percent === 100) feedback.innerText = "Perfekt! Du verstehst Speicherverwaltung exzellent.";
+            else if(percent >= 80) feedback.innerText = "Sehr stark! Du bist sicher im Umgang mit Pointern.";
+            else if(percent >= 50) feedback.innerText = "Gute Basis. Schau dir Linked Lists und Malloc nochmal an.";
+            else feedback.innerText = "Nicht aufgeben! Speicherverwaltung in C ist schwer. Übe weiter.";
         }
     </script>
 </body>
