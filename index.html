@@ -1,598 +1,254 @@
-<!DOCTYPE html> 
-<html lang="de">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C Programming Master Suite</title>
+    <title>Eco-Culture: DE vs FR | Dark Mode</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-color: #38bdf8; /* Sky Blue */
-            --accent-hover: #0ea5e9;
-            --correct-color: #22c55e;
-            --wrong-color: #ef4444;
-            --sort-color: #f59e0b; /* Amber for Sorting */
+            /* Dunkle, warme Farbpalette */
+            --bg: #121212;             /* Tiefes Anthrazit */
+            --card-bg: #1e1e1e;        /* Etwas helleres Grau für Karten */
+            --de-color: #81c784;       /* Warmes Salbeigrün */
+            --fr-color: #64b5f6;       /* Gedämpftes Blau */
+            --accent-gold: #d4af37;    /* Gold/Bronze für Akzente */
+            --text-main: #e0e0e0;      /* Hellgrauer Text */
+            --text-dim: #a0a0a0;       /* Gedimmter Text */
+            --shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
-
-        * { box-sizing: border-box; }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'SF Pro Display', -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-
-        .container {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 850px;
+        header {
             text-align: center;
-            border: 1px solid #334155;
-            position: relative;
-            overflow: hidden;
+            padding: 80px 20px;
         }
-
-        h1 { margin-bottom: 0.5rem; letter-spacing: -0.5px; }
-        h2 { color: var(--accent-color); font-size: 1.5rem; margin-bottom: 1rem; }
-        p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 2rem; }
-
-        /* Screens */
-        .screen { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
-        .screen.active { display: block; opacity: 1; }
-
-        /* Buttons */
-        .btn-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
-        @media (min-width: 600px) { .btn-grid { grid-template-columns: 1fr 1fr; } }
-
-        .btn {
-            background-color: #334155;
-            color: white;
-            border: 2px solid transparent;
-            padding: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.2s;
+        h1 { 
+            font-size: 3rem; 
+            margin-bottom: 10px; 
+            color: var(--accent-gold); 
+            letter-spacing: -0.02em;
         }
-        .btn:hover:not([disabled]) { background-color: #475569; transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .btn.correct { background-color: rgba(34, 197, 94, 0.2); border-color: var(--correct-color); color: var(--correct-color); }
-        .btn.wrong { background-color: rgba(239, 68, 68, 0.2); border-color: var(--wrong-color); color: var(--wrong-color); }
-
-        .action-btn {
-            background-color: var(--accent-color);
-            color: #0f172a;
-            border: none;
+        .subtitle { 
+            color: var(--text-dim); 
+            font-size: 1.3rem; 
+            font-weight: 300;
+        }
+        .wrapper {
             width: 100%;
-            padding: 16px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 8px;
-            margin-top: 15px;
-            cursor: pointer;
+            max-width: 1100px;
+            padding-bottom: 100px;
+        }
+        /* Themen-Reihen */
+        .topic-row {
+            position: relative;
+            margin-bottom: 50px;
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            border: 1px solid #333;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .topic-row:hover {
+            border-color: var(--accent-gold);
+        }
+        /* Info-Panels */
+        .info-panel {
+            flex: 1;
+            padding: 50px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .info-panel.de { text-align: right; }
+        .info-panel.fr { text-align: left; }
+        .info-panel h3 { 
+            font-size: 2rem; 
+            margin-bottom: 15px; 
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .action-btn:hover { background-color: var(--accent-hover); }
-        .action-btn.secondary { background-color: transparent; border: 2px solid var(--accent-color); color: var(--accent-color); }
-        .action-btn.secondary:hover { background-color: rgba(56, 189, 248, 0.1); }
-
-        /* Menu Grid */
-        .menu-grid { display: grid; gap: 20px; grid-template-columns: 1fr; margin-bottom: 20px; }
-        @media (min-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .menu-card {
-            background: #1e293b;
-            border: 2px solid #475569;
-            padding: 2rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
+        .info-panel.de h3 { color: var(--de-color); }
+        .info-panel.fr h3 { color: var(--fr-color); }
+        /* Piktogramm in der Mitte */
+        .main-picto {
+            width: 260px;
+            height: 260px;
+            background: #2a2a2a; /* Dunklerer Kreis */
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #444;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex-shrink: 0;
+            padding: 10px;
         }
-        .menu-card:hover { border-color: var(--accent-color); transform: translateY(-5px); background: #0f172a; }
-        .menu-card h3 { color: var(--text-primary); margin: 0 0 10px 0; }
-        .menu-card p { margin: 0; font-size: 0.9rem; }
-
-        /* Code Block */
-        .code-container {
-            background-color: #0b1120;
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: left;
-            overflow-x: auto;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid var(--accent-color);
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 0.9rem;
+        .main-picto img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
         }
-
-        /* Sorting Info Cards */
-        .info-grid { display: grid; gap: 15px; text-align: left; margin-bottom: 20px; }
-        .info-card {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--sort-color);
+        /* Hover-Effekte */
+        .topic-row:hover .main-picto {
+            transform: scale(0.75);
+            border-color: var(--accent-gold);
+            background: #121212;
         }
-        .info-card h4 { margin: 0 0 5px 0; color: var(--sort-color); }
-        .info-card span { font-family: monospace; background: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; color: #fbbf24; }
-
-        .explanation {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: rgba(56, 189, 248, 0.1);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            color: #e2e8f0;
-            border-left: 4px solid var(--accent-color);
-            display: none;
-            text-align: left;
+        .topic-row:hover .info-panel {
+            opacity: 1;
+            visibility: visible;
         }
-
-        .header-stats { display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 10px; font-weight: bold; }
-        .progress-bar { width: 100%; height: 6px; background: #334155; border-radius: 3px; margin-bottom: 20px; overflow: hidden; }
-        .progress { height: 100%; background: var(--accent-color); width: 0%; transition: width 0.3s ease; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { 
+            margin-bottom: 12px; 
+            font-size: 1.1rem; 
+            color: var(--text-main);
+            font-weight: 300;
+        }
+        .label {
+            position: absolute;
+            top: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent-gold);
+            opacity: 0.6;
+        }
+        /* Bias-Sektion am Ende */
+        .bias-section {
+            max-width: 900px;
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 28px;
+            margin-top: 60px;
+            border: 1px solid #333;
+        }
+        .bias-section h3 { color: var(--accent-gold); margin-top: 0; }
+        .bias-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .bias-item b { color: var(--text-main); display: block; margin-bottom: 5px; }
+        .bias-item p { color: var(--text-dim); margin: 0; font-size: 0.95rem; }
+        @media (max-width: 850px) {
+            .topic-row { height: auto; flex-direction: column; padding: 60px 0; }
+            .info-panel { text-align: center !important; padding: 20px; }
+            .main-picto { width: 180px; height: 180px; margin-bottom: 20px; }
+            .bias-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div id="menu-screen" class="screen active">
-        <h1>C Programming Arena</h1>
-        <p>Wähle deine Herausforderung</p>
+<header>
+    <h1>Environmental Awareness</h1>
+    <div class="subtitle">Germany & France: A Cultural Deep Dive</div>
+</header>
+<div class="wrapper">
+    <div class="topic-row">
+        <div class="label">01. Energy & Nature</div>
+        <div class="info-panel de">
+            <h3>Germany</h3>
+            <ul>
+                <li>Romanticized view of nature</li>
+                <li>Strict anti-nuclear identity</li>
+                <li>Focus on Renewables</li>
+            </ul>
+        </div>
         
-        <div class="menu-grid">
-            <div class="menu-card" onclick="startMode('general')">
-                <h3>🏆 Masterclass</h3>
-                <p>40 Fragen querbeet.<br>Pointer, Structs, Memory.</p>
-            </div>
-            <div class="menu-card" onclick="startInfoScreen()">
-                <h3 style="color: var(--sort-color)">⚡ Algorithmen</h3>
-                <p>20 Fragen.<br>Merge, Quick, Heap & Insertion Sort.</p>
-            </div>
+        <div class="main-picto">
+            <img src="picto_energie.png" alt="Energy">
+        </div>
+        <div class="info-panel fr">
+            <h3>France</h3>
+            <ul>
+                <li>Technological pragmatism</li>
+                <li>Nuclear as "clean" energy</li>
+                <li>State-led independence</li>
+            </ul>
         </div>
     </div>
-
-    <div id="info-screen" class="screen">
-        <h2 style="color: var(--sort-color)">Algorithmen Übersicht</h2>
-        <div class="info-grid">
-            <div class="info-card">
-                <h4>Merge Sort</h4>
-                <p>Teile & Herrsche. Teilt Liste rekursiv, bis 1 Element übrig ist, dann verschmilzt (merges) er sortiert zurück.<br><span>O(n log n)</span> • Stabil • Braucht extra Speicher.</p>
+    <div class="topic-row">
+        <div class="label">02. Everyday Life</div>
+        <div class="info-panel de">
+            <h3>Germany</h3>
+            <ul>
+                <li>Systematic recycling (Pfand)</li>
+                <li>Rule-based social discipline</li>
+                <li>Virtue of resource saving</li>
+            </ul>
+        </div>
+        <div class="main-picto">
+            <img src="picto_alltag.png" alt="Life">
+        </div>
+        <div class="info-panel fr">
+            <h3>France</h3>
+            <ul>
+                <li>Focus on "Terroir" & Taste</li>
+                <li>Eco-choices as lifestyle</li>
+                <li>Conscious individual choice</li>
+            </ul>
+        </div>
+    </div>
+    <div class="topic-row">
+        <div class="label">03. Activism</div>
+        <div class="info-panel de">
+            <h3>Germany</h3>
+            <ul>
+                <li>Institutionalized NGO work</li>
+                <li>Parliamentary representation</li>
+                <li>Aiming for moral consensus</li>
+            </ul>
+        </div>
+        <div class="main-picto">
+            <img src="picto_aktivismus.png" alt="Activism">
+        </div>
+        <div class="info-panel fr">
+            <h3>France</h3>
+            <ul>
+                <li>Tradition of confrontation</li>
+                <li>ZAD (Direct land occupation)</li>
+                <li>Ecological/Social link</li>
+            </ul>
+        </div>
+    </div>
+    <div class="bias-section">
+        <h3>AI Bias Evaluation</h3>
+        <div class="bias-grid">
+            <div class="bias-item">
+                <b>Stereotyping</b>
+                <p>Simplified "disciplined vs. rebellious" categories avoid regional nuances.</p>
             </div>
-            <div class="info-card">
-                <h4>Quick Sort</h4>
-                <p>Wählt Pivot-Element. Alle kleineren nach links, größeren nach rechts. Rekursiv.<br><span>Ø O(n log n)</span> • Instabil • In-Place (meistens).</p>
+            <div class="bias-item">
+                <b>Western Data</b>
+                <p>Dominated by German/English perspectives, potentially missing French binnendiscourse.</p>
             </div>
-            <div class="info-card">
-                <h4>Insertion Sort</h4>
-                <p>Wie Kartenspielen. Nimmt nächstes Element und schiebt es an die richtige Stelle im sortierten Teil.<br><span>O(n²)</span> • Stabil • Sehr schnell bei kleinen/fast sortierten Listen.</p>
+            <div class="bias-item">
+                <b>Conflict Focus</b>
+                <p>Overemphasizes radical actions over systemic evolution.</p>
             </div>
-            <div class="info-card">
-                <h4>Heap Sort</h4>
-                <p>Baut Binären Heap (Max-Heap). Tauscht Wurzel (Max) ans Ende, verkleinert Heap, repariert Heap.<br><span>O(n log n)</span> • Instabil • In-Place.</p>
+            <div class="bias-item">
+                <b>Sources</b>
+                <p>Based on dfi, OFAJ, UBA, ADEME and Hofstede Insights.</p>
             </div>
         </div>
-        <button class="action-btn" onclick="startMode('sorting')">Verstanden, Quiz starten!</button>
-    </div>
-
-    <div id="quiz-screen" class="screen">
-        <div class="header-stats">
-            <span id="question-count">Frage 1</span>
-            <span id="score">Score: 0</span>
-        </div>
-        <div class="progress-bar"><div id="progress" class="progress"></div></div>
-        
-        <div id="code-box" class="code-container" style="display:none;"><pre><code id="code-snippet"></code></pre></div>
-        
-        <h3 id="question-text">Frage...</h3>
-        
-        <div id="answer-buttons" class="btn-grid"></div>
-        <div id="explanation" class="explanation"></div>
-        
-        <button id="next-btn" class="action-btn" style="display:none;">Weiter</button>
-    </div>
-
-    <div id="result-screen" class="screen">
-        <h1>Ergebnis</h1>
-        <p>Du hast <strong id="final-score" style="color: var(--accent-color); font-size: 1.5rem;">0</strong> richtig beantwortet.</p>
-        <p id="feedback-message"></p>
-        
-        <button class="action-btn" onclick="location.reload()">Zum Hauptmenü</button>
-        <button id="other-quiz-btn" class="action-btn secondary">Anderes Quiz spielen</button>
     </div>
 </div>
-
-<script>
-// --- DATEN ---
-
-// 40 Fragen (Allgemein)
-const generalQuestions = [
-    { code: `int x=5; if(x=0) printf("A"); else printf("B");`, question: "Was wird ausgegeben?", answers: [{text:"B",correct:true}, {text:"A",correct:false}, {text:"Error",correct:false}], explanation: "Zuweisung x=0 gibt 0 zurück (false)." },
-    { code: `int *p = malloc(0);`, question: "Was gibt malloc(0) zurück?", answers: [{text:"NULL oder Unique Pointer",correct:true}, {text:"Crash",correct:false}, {text:"Error",correct:false}], explanation: "Implementation defined. Meistens sicher nutzbar für free()." },
-    { code: `union { int i; char c; } u; u.i=1;`, question: "Was passiert mit u.c?", answers: [{text:"Wird überschrieben",correct:true}, {text:"Bleibt gleich",correct:false}, {text:"Syntaxfehler",correct:false}], explanation: "Unions teilen sich den Speicher." },
-    // ... (Hier füge ich deine alten Fragen ein, gekürzt für dieses Beispiel. Du kannst die 40 von oben hier reinkopieren!)
-    { code: `char *s="A"; s[0]='B';`, question: "Effekt?", answers: [{text:"SegFault",correct:true}, {text:"Ändert zu B",correct:false}], explanation: "String Literale sind read-only." },
-    { code: `int a[3]={1,2,3}; printf("%d", 2[a]);`, question: "Output?", answers: [{text:"3",correct:true}, {text:"Error",correct:false}], explanation: "a[i] == *(a+i) == *(i+a) == i[a]." },
-    { code: `int x = 10; { int x = 5; } printf("%d", x);`, question: "Output?", answers: [{text:"10",correct:true}, {text:"5",correct:false}], explanation: "Inneres x verdeckt äußeres nur im Block." },
-    // Hinweis: Kopiere hier die restlichen Fragen aus dem vorherigen Chat rein, wenn du die vollen 40 willst.
-    // Ich habe Platzhalter eingefügt, damit der Code läuft.
-];
-
-// 20 Fragen (Sortieralgorithmen)
-const sortingQuestions = [
-    {
-        question: "Welcher Algorithmus hat im Worst-Case eine Laufzeit von O(n²), ist aber im Average-Case O(n log n)?",
-        answers: [
-            { text: "Quick Sort", correct: true },
-            { text: "Merge Sort", correct: false },
-            { text: "Heap Sort", correct: false },
-            { text: "Insertion Sort", correct: false }
-        ],
-        explanation: "Quick Sort kann bei schlechter Pivot-Wahl (z.B. schon sortierte Liste) zu O(n²) degenerieren. Merge und Heap sind immer O(n log n)."
-    },
-    {
-        question: "Welcher dieser Algorithmen ist 'stabil' (behält Reihenfolge gleicher Elemente bei)?",
-        answers: [
-            { text: "Quick Sort", correct: false },
-            { text: "Heap Sort", correct: false },
-            { text: "Merge Sort", correct: true },
-            { text: "Selection Sort", correct: false }
-        ],
-        explanation: "Merge Sort ist stabil. Quick Sort und Heap Sort tauschen Elemente über weite Distanzen und zerstören die relative Ordnung."
-    },
-    {
-        code: `void sort(int arr[], int n) {
-  for (int i = 1; i < n; i++) {
-    int key = arr[i];
-    int j = i - 1;
-    while (j >= 0 && arr[j] > key) {
-      arr[j + 1] = arr[j];
-      j = j - 1;
-    }
-    arr[j + 1] = key;
-  }
-}`,
-        question: "Welcher Algorithmus ist das?",
-        answers: [
-            { text: "Insertion Sort", correct: true },
-            { text: "Selection Sort", correct: false },
-            { text: "Bubble Sort", correct: false },
-            { text: "Quick Sort", correct: false }
-        ],
-        explanation: "Klassischer Insertion Sort: Man nimmt ein Element (key) und schiebt es nach links an die richtige Position."
-    },
-    {
-        question: "Was ist der Hauptvorteil von Heap Sort gegenüber Merge Sort?",
-        answers: [
-            { text: "Er ist stabil", correct: false },
-            { text: "Er braucht nur O(1) Zusatzspeicher (In-Place)", correct: true },
-            { text: "Er ist schneller im Average Case", correct: false },
-            { text: "Er ist einfacher zu implementieren", correct: false }
-        ],
-        explanation: "Merge Sort benötigt O(n) Hilfsspeicher für das Mergen. Heap Sort sortiert direkt im Array."
-    },
-    {
-        question: "Bei welchem Input ist Insertion Sort am schnellsten (O(n))?",
-        answers: [
-            { text: "Zufällig sortiert", correct: false },
-            { text: "Umgekehrt sortiert", correct: false },
-            { text: "Bereits sortiert", correct: true },
-            { text: "Lauter gleiche Elemente", correct: false }
-        ],
-        explanation: "Wenn die Liste schon sortiert ist, bricht die innere While-Schleife sofort ab. Insertion Sort läuft dann linear durch."
-    },
-    {
-        question: "Was macht die 'Partition' Funktion in Quick Sort?",
-        answers: [
-            { text: "Teilt das Array in zwei gleich große Hälften", correct: false },
-            { text: "Sortiert das Array komplett", correct: false },
-            { text: "Platziert Pivot an richtige Stelle (kleinere links, größere rechts)", correct: true },
-            { text: "Findet das Maximum", correct: false }
-        ],
-        explanation: "Partition ist das Herzstück. Es sorgt dafür, dass das Pivot-Element endgültig sortiert ist."
-    },
-    {
-        code: `int mid = left + (right - left) / 2;
-sort(arr, left, mid);
-sort(arr, mid + 1, right);
-merge(arr, left, mid, right);`,
-        question: "Zu welchem Algorithmus gehört dieses Fragment?",
-        answers: [
-            { text: "Merge Sort", correct: true },
-            { text: "Binary Search", correct: false },
-            { text: "Quick Sort", correct: false },
-            { text: "Heap Sort", correct: false }
-        ],
-        explanation: "Klassisches Muster: Mitte finden, linke Hälfte rekursiv, rechte Hälfte rekursiv, dann zusammenfügen (merge)."
-    },
-    {
-        question: "Wie viele Vergleiche macht Selection Sort im Worst Case?",
-        answers: [
-            { text: "O(n)", correct: false },
-            { text: "O(log n)", correct: false },
-            { text: "O(n²)", correct: true },
-            { text: "O(n log n)", correct: false }
-        ],
-        explanation: "Selection Sort muss immer das Minimum im verbleibenden Rest suchen, egal wie die Daten aussehen. Immer n*(n-1)/2 Vergleiche."
-    },
-    {
-        question: "Welche Datenstruktur nutzt Heap Sort intern?",
-        answers: [
-            { text: "Linked List", correct: false },
-            { text: "Queue", correct: false },
-            { text: "Stack", correct: false },
-            { text: "Priority Queue (Binary Heap)", correct: true }
-        ],
-        explanation: "Heap Sort organisiert das Array logisch als binären Baum (Max-Heap), um effizient das Maximum zu ziehen."
-    },
-    {
-        question: "Warum ist Quick Sort in der Praxis oft schneller als Heap Sort?",
-        answers: [
-            { text: "Bessere Cache-Lokalität", correct: true },
-            { text: "Weniger Vergleiche", correct: false },
-            { text: "Geringere theoretische Komplexität", correct: false },
-            { text: "Er ist stabil", correct: false }
-        ],
-        explanation: "Quick Sort greift linear auf Speicher zu (scannt von links und rechts). Heap Sort springt wild im Array (Indizes i, 2i, 2i+1), was schlecht für den CPU-Cache ist."
-    },
-    {
-        question: "Was passiert beim Merge-Schritt, wenn Hilfsarray zu klein gewählt wird?",
-        answers: [
-            { text: "Buffer Overflow", correct: true },
-            { text: "Wird automatisch langsamer", correct: false },
-            { text: "Gar nichts", correct: false },
-            { text: "Sortierung wird instabil", correct: false }
-        ],
-        explanation: "In C muss man Speicher manuell verwalten. Zu kleines malloc führt zu Speicherüberschreibungen."
-    },
-    {
-        question: "Welcher Sortieralgorithmus wird oft für sehr kleine Arrays (< 10 Elemente) innerhalb von Quick Sort genutzt?",
-        answers: [
-            { text: "Bubble Sort", correct: false },
-            { text: "Insertion Sort", correct: true },
-            { text: "Merge Sort", correct: false },
-            { text: "Heap Sort", correct: false }
-        ],
-        explanation: "Insertion Sort hat sehr wenig Overhead. Für kleine n schlägt es die komplexen O(n log n) Algorithmen."
-    },
-    {
-        question: "Was ist ein 'Pivot'?",
-        answers: [
-            { text: "Das erste Element im Array", correct: false },
-            { text: "Ein Referenzelement zum Aufteilen bei Quick Sort", correct: true },
-            { text: "Der Index des Maximums", correct: false },
-            { text: "Ein Zeiger auf NULL", correct: false }
-        ],
-        explanation: "Alles kleiner als Pivot kommt nach links, alles größere nach rechts."
-    },
-    {
-        question: "Welche Laufzeit hat Bubble Sort im besten Fall (mit Flag-Optimierung)?",
-        answers: [
-            { text: "O(1)", correct: false },
-            { text: "O(n)", correct: true },
-            { text: "O(n log n)", correct: false },
-            { text: "O(n²)", correct: false }
-        ],
-        explanation: "Wenn beim ersten Durchlauf kein Tausch stattfindet, ist die Liste sortiert und Bubble Sort stoppt."
-    },
-    {
-        code: `// Heap Parent Index Berechnung
-int parent(int i) { return (i - 1) / 2; }
-int left(int i) { return 2 * i + 1; }`,
-        question: "Stimmt diese Rechnung für 0-basierte Arrays?",
-        answers: [
-            { text: "Ja", correct: true },
-            { text: "Nein, muss i/2 sein", correct: false },
-            { text: "Nein, heap fängt bei Index 1 an", correct: false },
-            { text: "Nur für 64-bit Systeme", correct: false }
-        ],
-        explanation: "Standardformeln für binären Heap im Array bei Startindex 0."
-    },
-    {
-        question: "Was bedeutet 'In-Place' Sortierung?",
-        answers: [
-            { text: "Daten werden nicht bewegt", correct: false },
-            { text: "Benötigt nur konstanten extra Speicher O(1)", correct: true },
-            { text: "Findet nur an einer Speicheradresse statt", correct: false },
-            { text: "Nur für Pointer Arrays", correct: false }
-        ],
-        explanation: "Algorithmus braucht kein zweites Array gleicher Größe (wie Merge Sort), sondern tauscht Elemente im bestehenden Array."
-    },
-    {
-        question: "Welches Problem hat die naive Quick Sort Implementierung bei sortierten Inputs?",
-        answers: [
-            { text: "Stack Overflow (Rekursionstiefe n)", correct: true },
-            { text: "Falsches Ergebnis", correct: false },
-            { text: "Speicherleck", correct: false },
-            { text: "Wird zu O(n)", correct: false }
-        ],
-        explanation: "Wenn Pivot immer das erste Element ist und Liste sortiert ist, wird immer nur 1 Element abgespalten. Rekursionstiefe = n -> Stack Überlauf."
-    },
-    {
-        question: "Merge Sort: Bottom-Up vs Top-Down. Was ist der Unterschied?",
-        answers: [
-            { text: "Top-Down nutzt Rekursion, Bottom-Up Iteration", correct: true },
-            { text: "Laufzeit ist unterschiedlich", correct: false },
-            { text: "Bottom-Up ist instabil", correct: false },
-            { text: "Gibt keinen", correct: false }
-        ],
-        explanation: "Top-Down ist der klassische rekursive Ansatz. Bottom-Up startet mit Merge von 1er Paaren, dann 2er, 4er etc. iterativ."
-    },
-    {
-        question: "Ist C's Standard `qsort` garantiert ein Quick Sort?",
-        answers: [
-            { text: "Ja", correct: false },
-            { text: "Nein, der Standard schreibt den Algo nicht vor", correct: true },
-            { text: "Es ist immer Merge Sort", correct: false },
-            { text: "Nur unter Linux", correct: false }
-        ],
-        explanation: "Der Name ist historisch. Implementierungen nutzen oft Hybriden (Introsort), um Worst-Case O(n²) zu vermeiden."
-    },
-    {
-        question: "Shell Sort ist eine Optimierung von...?",
-        answers: [
-            { text: "Insertion Sort", correct: true },
-            { text: "Bubble Sort", correct: false },
-            { text: "Merge Sort", correct: false },
-            { text: "Selection Sort", correct: false }
-        ],
-        explanation: "Shell Sort nutzt Insertion Sort auf Lücken-Intervallen, um Elemente schneller über weite Distanzen zu bewegen."
-    }
-];
-
-// --- LOGIK ---
-
-const screens = {
-    menu: document.getElementById('menu-screen'),
-    info: document.getElementById('info-screen'),
-    quiz: document.getElementById('quiz-screen'),
-    result: document.getElementById('result-screen')
-};
-
-let currentQuestions = [];
-let currentIndex = 0;
-let score = 0;
-let currentMode = '';
-
-function showScreen(name) {
-    Object.values(screens).forEach(s => {
-        s.classList.remove('active');
-        s.style.display = 'none';
-    });
-    const target = screens[name];
-    target.style.display = 'block';
-    // Kleiner Hack für Fade-In Animation
-    setTimeout(() => target.classList.add('active'), 10);
-}
-
-function startInfoScreen() {
-    showScreen('info');
-}
-
-function startMode(mode) {
-    currentMode = mode;
-    if (mode === 'general') {
-        // Mische die allgemeinen Fragen
-        currentQuestions = [...generalQuestions].sort(() => Math.random() - 0.5);
-    } else {
-        // Mische die Sortierfragen
-        currentQuestions = [...sortingQuestions].sort(() => Math.random() - 0.5);
-    }
-    
-    score = 0;
-    currentIndex = 0;
-    document.getElementById('progress').style.width = '0%';
-    showScreen('quiz');
-    loadQuestion();
-}
-
-function loadQuestion() {
-    const q = currentQuestions[currentIndex];
-    const codeBox = document.getElementById('code-box');
-    const codeEl = document.getElementById('code-snippet');
-    
-    document.getElementById('question-count').innerText = `Frage ${currentIndex + 1} / ${currentQuestions.length}`;
-    document.getElementById('score').innerText = `Score: ${score}`;
-    
-    // Code Snippet anzeigen oder verstecken
-    if (q.code) {
-        codeBox.style.display = 'block';
-        codeEl.innerText = q.code;
-    } else {
-        codeBox.style.display = 'none';
-    }
-    
-    document.getElementById('question-text').innerText = q.question;
-    document.getElementById('explanation').style.display = 'none';
-    document.getElementById('next-btn').style.display = 'none';
-    
-    const btnGrid = document.getElementById('answer-buttons');
-    btnGrid.innerHTML = '';
-    
-    q.answers.forEach(ans => {
-        const btn = document.createElement('button');
-        btn.innerText = ans.text;
-        btn.classList.add('btn');
-        if (ans.correct) btn.dataset.correct = "true";
-        btn.onclick = () => selectAnswer(btn, ans.correct);
-        btnGrid.appendChild(btn);
-    });
-}
-
-function selectAnswer(btn, isCorrect) {
-    const btns = document.getElementById('answer-buttons').children;
-    Array.from(btns).forEach(b => {
-        b.disabled = true;
-        if (b.dataset.correct === "true") b.classList.add('correct');
-        else if (b === btn) b.classList.add('wrong');
-    });
-
-    if (isCorrect) {
-        score++;
-        document.getElementById('score').innerText = `Score: ${score}`;
-    }
-
-    // Progress Bar update
-    const percent = ((currentIndex + 1) / currentQuestions.length) * 100;
-    document.getElementById('progress').style.width = `${percent}%`;
-
-    // Erklärung anzeigen
-    const expDiv = document.getElementById('explanation');
-    expDiv.innerText = "💡 " + currentQuestions[currentIndex].explanation;
-    expDiv.style.display = 'block';
-
-    document.getElementById('next-btn').style.display = 'block';
-}
-
-document.getElementById('next-btn').onclick = () => {
-    currentIndex++;
-    if (currentIndex < currentQuestions.length) {
-        loadQuestion();
-    } else {
-        finishQuiz();
-    }
-};
-
-function finishQuiz() {
-    showScreen('result');
-    document.getElementById('final-score').innerText = `${score} / ${currentQuestions.length}`;
-    
-    const feedback = document.getElementById('feedback-message');
-    const percent = score / currentQuestions.length;
-    
-    if (percent === 1) feedback.innerText = "Perfekt! Du bist ein Algorithmus-Meister.";
-    else if (percent > 0.7) feedback.innerText = "Sehr gut gemacht!";
-    else feedback.innerText = "Gute Übung. Schau dir die Erklärungen nochmal an.";
-    
-    // Button Text für den Wechsel anpassen
-    const otherBtn = document.getElementById('other-quiz-btn');
-    if (currentMode === 'general') {
-        otherBtn.innerText = "Zum Sortier-Quiz wechseln";
-        otherBtn.onclick = () => startInfoScreen();
-    } else {
-        otherBtn.innerText = "Zum Masterclass-Quiz wechseln";
-        otherBtn.onclick = () => startMode('general');
-    }
-}
-
-// Initialer Start (falls gewünscht, sonst Menü)
-// showScreen('menu'); 
-
-</script>
 </body>
 </html>
